@@ -96,7 +96,7 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense, groupId }
 
           <div className="space-y-6">
             <div>
-              <span className="text-xxs font-bold bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-full uppercase tracking-wider">
+              <span className="text-xxs font-bold bg-green-600/10 text-green-400 px-2.5 py-1 rounded-full uppercase tracking-wider">
                 Split breakdown ({expense.splitType})
               </span>
               <h3 className="text-xl font-extrabold text-white mt-3 font-display break-words">
@@ -118,7 +118,7 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense, groupId }
               </div>
               <div className="text-right">
                 <span className="text-xxs font-bold text-slate-500 uppercase tracking-wider block">Total Cost</span>
-                <span className="text-lg font-black text-brand-500 mt-0.5 block">
+                <span className="text-lg font-black text-green-600 mt-0.5 block">
                   ${expense.amount.toFixed(2)}
                 </span>
               </div>
@@ -172,7 +172,7 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense, groupId }
 
           {/* Chat Header */}
           <div className="px-5 py-4 border-b border-slate-800/80 flex items-center gap-2 bg-slate-900/30">
-            <MessageSquare size={16} className="text-brand-500" />
+            <MessageSquare size={16} className="text-green-600" />
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">Expense Chat</h4>
           </div>
 
@@ -180,7 +180,7 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense, groupId }
           <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
             {isLoading ? (
               <div className="flex items-center justify-center h-full">
-                <div className="w-5 h-5 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-green-600/30 border-t-green-600 rounded-full animate-spin"></div>
               </div>
             ) : comments.length > 0 ? (
               comments.map((comment) => {
@@ -199,7 +199,7 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense, groupId }
                     <div 
                       className={`p-3 rounded-2xl text-xs break-words border ${
                         isMyMessage 
-                          ? 'bg-brand-500 text-white border-brand-400/20 rounded-tr-none' 
+                          ? 'bg-green-600 text-white border-green-400/20 rounded-tr-none' 
                           : 'bg-slate-900 text-slate-200 border-slate-800 rounded-tl-none'
                       }`}
                     >
@@ -230,12 +230,12 @@ export default function ExpenseDetailModal({ isOpen, onClose, expense, groupId }
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Ask a question or comment..."
-              className="flex-1 bg-slate-950/70 border border-slate-800 rounded-xl py-2 px-3.5 text-xs text-white focus:border-brand-500 focus:ring-0 outline-none placeholder:text-slate-500"
+              className="flex-1 bg-slate-950/70 border border-slate-800 rounded-xl py-2 px-3.5 text-xs text-white focus:border-green-600 focus:ring-0 outline-none placeholder:text-slate-500"
             />
             <button 
               type="submit"
               disabled={!message.trim() || postCommentMutation.isPending}
-              className="w-8 h-8 rounded-lg bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center transition-all duration-150 disabled:opacity-40"
+              className="w-8 h-8 rounded-lg bg-green-600 hover:bg-green-700 text-white flex items-center justify-center transition-all duration-150 disabled:opacity-40"
             >
               <Send size={14} />
             </button>

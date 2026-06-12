@@ -112,7 +112,7 @@ export default function SettleUpModal({
             <select
               value={payerId}
               onChange={(e) => setPayerId(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm text-slate-200"
+              className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none transition text-sm text-slate-200"
             >
               {groupMembers.map((m) => (
                 <option key={m.user._id || m.user} value={m.user._id || m.user} className="bg-slate-900">
@@ -130,7 +130,7 @@ export default function SettleUpModal({
             <select
               value={payeeId}
               onChange={(e) => setPayeeId(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm text-slate-200"
+              className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none transition text-sm text-slate-200"
             >
               {groupMembers.map((m) => (
                 <option key={m.user._id || m.user} value={m.user._id || m.user} className="bg-slate-900">
@@ -154,7 +154,7 @@ export default function SettleUpModal({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full pl-10 pr-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm text-slate-200"
+                className="w-full pl-10 pr-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none transition text-sm text-slate-200"
               />
             </div>
           </div>
@@ -169,7 +169,7 @@ export default function SettleUpModal({
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="e.g. Sent via Venmo, paid cash"
-              className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm text-slate-200"
+              className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none transition text-sm text-slate-200"
             />
           </div>
 

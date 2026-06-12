@@ -6,6 +6,9 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CreateGroup from './pages/CreateGroup';
 import GroupDetail from './pages/GroupDetail';
+import Friends from './pages/Friends';
+import Activity from './pages/Activity';
+import Account from './pages/Account';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -57,6 +60,33 @@ function App() {
           element={
             <ProtectedRoute>
               <GroupDetail />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/friends" 
+          element={
+            <ProtectedRoute>
+              <Friends />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/activity" 
+          element={
+            <ProtectedRoute>
+              <Activity />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/account" 
+          element={
+            <ProtectedRoute>
+              <Account />
             </ProtectedRoute>
           } 
         />

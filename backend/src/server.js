@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 
 import connectDB from './config/db.js';
 import authRoutes from './routes/auth.js';
+import usersRoutes from './routes/users.js';
 import groupRoutes from './routes/groups.js';
 import expenseRoutes from './routes/expenses.js';
 import commentRoutes from './routes/comments.js';
@@ -42,6 +43,7 @@ app.use((req, res, next) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api', expenseRoutes);
 app.use('/api', commentRoutes);

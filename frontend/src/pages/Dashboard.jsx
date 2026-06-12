@@ -44,13 +44,13 @@ export default function Dashboard() {
     <div className="space-y-8">
       {/* Welcome & Stats Banner */}
       <div className="glass-panel p-6 md:p-8 rounded-3xl relative overflow-hidden bg-slate-900/30 border-slate-800/80">
-        <div className="absolute top-0 right-0 p-8 text-brand-500/10 pointer-events-none">
+        <div className="absolute top-0 right-0 p-8 text-green-600/10 pointer-events-none">
           <Sparkles size={160} />
         </div>
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <span className="text-xs font-bold text-brand-400 uppercase tracking-widest bg-brand-500/10 px-3 py-1 rounded-full">
+            <span className="text-xs font-bold text-green-400 uppercase tracking-widest bg-green-600/10 px-3 py-1 rounded-full">
               Overview
             </span>
             <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-3 font-display">
@@ -63,7 +63,7 @@ export default function Dashboard() {
           
           <div className="flex items-baseline gap-1 bg-slate-950/40 border border-slate-800/40 px-6 py-4 rounded-2xl">
             <span className="text-sm font-semibold text-slate-500">$</span>
-            <span className={`text-4xl font-black ${netBalance >= 0 ? 'text-brand-500' : 'text-red-500'}`}>
+            <span className={`text-4xl font-black ${netBalance >= 0 ? 'text-green-600' : 'text-red-500'}`}>
               {netBalance >= 0 ? '+' : ''}{netBalance.toFixed(2)}
             </span>
           </div>
@@ -85,13 +85,13 @@ export default function Dashboard() {
         </div>
 
         {/* You are owed */}
-        <div className="glass-card p-6 flex items-center justify-between hover:border-brand-500/25 transition-all duration-300">
+        <div className="glass-card p-6 flex items-center justify-between hover:border-green-600/25 transition-all duration-300">
           <div className="space-y-1">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">You Are Owed</span>
             <h3 className="text-2xl font-bold text-white">${totalOwedToMe.toFixed(2)}</h3>
             <p className="text-xs text-slate-400">Total balance you expect to receive</p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-green-600/10 text-green-600 flex items-center justify-center">
             <TrendingUp size={24} />
           </div>
         </div>
@@ -121,7 +121,7 @@ export default function Dashboard() {
                 <Link
                   key={group._id}
                   to={`/group/${group._id}`}
-                  className="glass-card p-5 block group hover:bg-slate-900/60 hover:border-brand-500/20 hover:shadow-lg hover:shadow-brand-500/5 transition-all duration-300"
+                  className="glass-card p-5 block group hover:bg-slate-900/60 hover:border-green-600/20 hover:shadow-lg hover:shadow-green-600/5 transition-all duration-300"
                 >
                   <div className="flex flex-col h-full justify-between gap-4">
                     <div className="space-y-1.5">
@@ -134,7 +134,7 @@ export default function Dashboard() {
                           className="text-slate-500 group-hover:translate-x-1 transition-transform" 
                         />
                       </div>
-                      <h4 className="font-bold text-white group-hover:text-brand-400 transition-colors text-base truncate">
+                      <h4 className="font-bold text-white group-hover:text-green-400 transition-colors text-base truncate">
                         {group.name}
                       </h4>
                       {group.description && (
@@ -147,7 +147,7 @@ export default function Dashboard() {
                     <div className="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs">
                       <span className="text-slate-500">Your Status</span>
                       {balance > 0 ? (
-                        <span className="text-brand-500 font-semibold bg-brand-500/10 px-2 py-0.5 rounded-md">
+                        <span className="text-green-600 font-semibold bg-green-600/10 px-2 py-0.5 rounded-md">
                           Owed: ${balance.toFixed(2)}
                         </span>
                       ) : balance < 0 ? (

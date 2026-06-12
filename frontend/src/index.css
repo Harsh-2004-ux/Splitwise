@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
   body {
@@ -15,29 +12,30 @@
   }
 }
 
-/* Custom components & utilities */
-.glass-panel {
-  @apply bg-slate-900/40 backdrop-blur-xl border border-slate-800/60 shadow-xl;
-}
+@layer components {
+  .glass-panel {
+    @apply bg-slate-900/40 backdrop-blur-xl border border-slate-800/60 shadow-xl;
+  }
 
-.glass-card {
-  @apply bg-slate-900/60 backdrop-blur-lg border border-slate-800/80 rounded-2xl shadow-md;
-}
+  .glass-card {
+    @apply bg-slate-900/60 backdrop-blur-lg border border-slate-800/80 rounded-2xl shadow-md;
+  }
 
-.glass-input {
-  @apply bg-slate-950/50 border border-slate-800/80 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all duration-200;
-}
+  .glass-input {
+    @apply bg-slate-950/50 border border-slate-800/80 rounded-xl focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none transition-all duration-200;
+  }
 
-.btn-primary {
-  @apply bg-brand-500 hover:bg-brand-600 text-white font-medium px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-brand-500/20 hover:shadow-brand-500/35 active:scale-[0.98];
-}
+  .btn-primary {
+    @apply bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-green-600/20 hover:shadow-green-600/35 active:scale-[0.98];
+  }
 
-.btn-secondary {
-  @apply bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 text-slate-200 font-medium px-4 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98];
-}
+  .btn-secondary {
+    @apply bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 text-slate-200 font-medium px-4 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98];
+  }
 
-.btn-danger {
-  @apply bg-red-600/90 hover:bg-red-700 text-white font-medium px-4 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98];
+  .btn-danger {
+    @apply bg-red-600/90 hover:bg-red-700 text-white font-medium px-4 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98];
+  }
 }
 
 /* Custom scrollbar */
@@ -45,9 +43,16 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-800 rounded-full hover:bg-slate-750;
+  background-color: rgb(30, 41, 59);
+  border-radius: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(51, 65, 85);
 }

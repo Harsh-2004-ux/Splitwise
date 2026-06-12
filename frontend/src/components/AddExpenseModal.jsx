@@ -273,7 +273,7 @@ export default function AddExpenseModal({ isOpen, onClose, groupId, groupMembers
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Groceries, Pizza night"
-              className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm text-slate-200"
+              className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none transition text-sm text-slate-200"
             />
           </div>
 
@@ -292,7 +292,7 @@ export default function AddExpenseModal({ isOpen, onClose, groupId, groupMembers
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm text-slate-200"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none transition text-sm text-slate-200"
                 />
               </div>
             </div>
@@ -304,7 +304,7 @@ export default function AddExpenseModal({ isOpen, onClose, groupId, groupMembers
               <select
                 value={paidBy}
                 onChange={(e) => setPaidBy(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm text-slate-200"
+                className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800/80 rounded-xl focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none transition text-sm text-slate-200"
               >
                 {groupMembers.map((m) => (
                   <option key={m.user._id || m.user} value={m.user._id || m.user} className="bg-slate-900">
@@ -328,7 +328,7 @@ export default function AddExpenseModal({ isOpen, onClose, groupId, groupMembers
                   onClick={() => setSplitType(type)}
                   className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
                     splitType === type
-                      ? 'bg-brand-500 text-white shadow-sm'
+                      ? 'bg-green-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -381,7 +381,7 @@ export default function AddExpenseModal({ isOpen, onClose, groupId, groupMembers
                         type="checkbox"
                         checked={split.checked}
                         onChange={() => handleCheckboxToggle(memberId)}
-                        className="w-4 h-4 rounded text-brand-500 bg-slate-900 border-slate-750 focus:ring-brand-500"
+                        className="w-4 h-4 rounded text-green-600 bg-slate-900 border-slate-750 focus:ring-green-600"
                       />
                       <div className="truncate">
                         <span className="text-sm font-semibold text-white truncate block">
@@ -402,7 +402,7 @@ export default function AddExpenseModal({ isOpen, onClose, groupId, groupMembers
                             step={splitType === 'PERCENTAGE' ? '0.1' : splitType === 'UNEQUAL' ? '0.01' : '1'}
                             value={split.value}
                             onChange={(e) => handleValueChange(memberId, e.target.value)}
-                            className="w-full text-right bg-slate-950/60 border border-slate-800 rounded-lg py-1 px-2 pr-7 text-xs text-white focus:border-brand-500 focus:ring-0 outline-none"
+                            className="w-full text-right bg-slate-950/60 border border-slate-800 rounded-lg py-1 px-2 pr-7 text-xs text-white focus:border-green-600 focus:ring-0 outline-none"
                             placeholder="0"
                           />
                           <span className="absolute right-2 top-1.5 text-[10px] font-bold text-slate-500">

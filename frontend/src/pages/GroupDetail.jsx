@@ -214,7 +214,7 @@ export default function GroupDetail() {
                 onClick={() => setActiveTab(tab)}
                 className={`pb-3 text-sm font-semibold border-b-2 px-4 transition-all capitalize ${
                   activeTab === tab
-                    ? 'border-brand-500 text-white'
+                    ? 'border-green-600 text-white'
                     : 'border-transparent text-slate-500 hover:text-slate-300'
                 }`}
               >
@@ -235,7 +235,7 @@ export default function GroupDetail() {
                     <div
                       key={expense._id}
                       onClick={() => handleOpenExpenseDetails(expense)}
-                      className="glass-card p-4 flex items-center justify-between cursor-pointer group hover:bg-slate-900/60 hover:border-brand-500/15 transition-all duration-200"
+                      className="glass-card p-4 flex items-center justify-between cursor-pointer group hover:bg-slate-900/60 hover:border-green-600/15 transition-all duration-200"
                     >
                       <div className="flex items-center gap-4 min-w-0 flex-1 pr-4">
                         <div className="w-10 h-10 rounded-xl bg-slate-800 flex flex-col items-center justify-center border border-slate-700/50 flex-shrink-0 group-hover:bg-slate-750 transition-colors">
@@ -248,7 +248,7 @@ export default function GroupDetail() {
                         </div>
 
                         <div className="truncate">
-                          <h4 className="font-bold text-white text-sm group-hover:text-brand-400 transition-colors truncate">
+                          <h4 className="font-bold text-white text-sm group-hover:text-green-400 transition-colors truncate">
                             {expense.title}
                           </h4>
                           <span className="text-xxs text-slate-500 mt-1 block">
@@ -268,7 +268,7 @@ export default function GroupDetail() {
                           {mySplit ? (
                             <>
                               <span className="text-xxs text-slate-500 block">Your Share</span>
-                              <span className={`text-xs font-semibold ${isOwner ? 'text-brand-500' : 'text-slate-300'}`}>
+                              <span className={`text-xs font-semibold ${isOwner ? 'text-green-600' : 'text-slate-300'}`}>
                                 ${mySplit.owedAmount.toFixed(2)}
                               </span>
                             </>
@@ -281,7 +281,7 @@ export default function GroupDetail() {
                         <div className="flex gap-1">
                           <button
                             onClick={(e) => handleOpenEditExpense(e, expense)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-brand-400 hover:bg-brand-500/10 transition-colors"
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-green-400 hover:bg-green-600/10 transition-colors"
                           >
                             <Edit3 size={14} />
                           </button>
@@ -327,7 +327,7 @@ export default function GroupDetail() {
                             <span className="text-slate-500 text-xs">owes</span>
                             <span className="font-bold text-white">{settle.toUser.name}</span>
                             <span className="text-slate-500 text-xs">:</span>
-                            <span className="font-extrabold text-brand-500 text-base">${settle.amount.toFixed(2)}</span>
+                            <span className="font-extrabold text-green-600 text-base">${settle.amount.toFixed(2)}</span>
                           </div>
 
                           <button
@@ -360,7 +360,7 @@ export default function GroupDetail() {
                         {bal.user.name} {(bal.user._id || bal.user) === currentUser?._id ? '(You)' : ''}
                       </span>
                       {bal.balance > 0 ? (
-                        <span className="text-brand-500 font-bold bg-brand-500/10 px-2 py-0.5 rounded-md text-xs">
+                        <span className="text-green-600 font-bold bg-green-600/10 px-2 py-0.5 rounded-md text-xs">
                           Owed: +${bal.balance.toFixed(2)}
                         </span>
                       ) : bal.balance < 0 ? (
@@ -389,7 +389,7 @@ export default function GroupDetail() {
                     className="glass-card p-4 flex items-center justify-between border-slate-850 bg-slate-950/10"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-brand-500/15 text-brand-500 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-green-600/15 text-green-600 flex items-center justify-center flex-shrink-0">
                         <Check size={16} />
                       </div>
                       <div>
@@ -423,7 +423,7 @@ export default function GroupDetail() {
           {/* Invite Member form */}
           <div className="glass-card p-5 space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <UserPlus size={14} className="text-brand-500" />
+              <UserPlus size={14} className="text-green-600" />
               <span>Invite Member</span>
             </h4>
 
@@ -434,7 +434,7 @@ export default function GroupDetail() {
             )}
 
             {inviteSuccess && (
-              <div className="text-xxs text-brand-400 bg-brand-500/10 border border-brand-500/20 p-2 rounded-lg">
+              <div className="text-xxs text-green-400 bg-green-600/10 border border-green-600/20 p-2 rounded-lg">
                 Member added successfully!
               </div>
             )}
@@ -446,7 +446,7 @@ export default function GroupDetail() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="friend@email.com"
-                className="flex-1 bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-brand-500 focus:ring-0 outline-none"
+                className="flex-1 bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-green-600 focus:ring-0 outline-none"
               />
               <button
                 type="submit"
@@ -465,7 +465,7 @@ export default function GroupDetail() {
           {/* Members list */}
           <div className="glass-card p-5 space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Users size={14} className="text-brand-500" />
+              <Users size={14} className="text-green-600" />
               <span>Group Members ({group.members.length})</span>
             </h4>
 

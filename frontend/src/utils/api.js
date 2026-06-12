@@ -90,6 +90,10 @@ export const api = {
     overallBalances: () => apiFetch('/users/me/balances'),
   },
 
+  users: {
+    list: () => apiFetch('/users'),
+  },
+
   settlements: {
     create: (groupId, { payerId, payeeId, amount, note }) => 
       apiFetch(`/groups/${groupId}/settlements`, {
