@@ -61,7 +61,7 @@ export default function Login() {
     setUsersLoading(true);
     try {
       // Fetch all registered users
-      const response = await fetch('http://localhost:3000/api/users');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users`);
       if (!response.ok) throw new Error('Failed to fetch users');
       const userData = await response.json();
       setUsers(userData);
@@ -331,4 +331,3 @@ export default function Login() {
     </div>
   );
 }
-
