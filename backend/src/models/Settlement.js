@@ -29,6 +29,10 @@ const settlementSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  importSource: {
+    rowNumber: Number,
+    rawDescription: String,
+  },
 });
 
 const Settlement = mongoose.model('Settlement', settlementSchema);

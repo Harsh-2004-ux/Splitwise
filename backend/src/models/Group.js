@@ -15,6 +15,15 @@ const groupMemberSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  leftAt: {
+    type: Date,
+    default: null,
+  },
+  membershipType: {
+    type: String,
+    enum: ['flatmate', 'guest'],
+    default: 'flatmate',
+  },
 });
 
 const groupSchema = new mongoose.Schema({

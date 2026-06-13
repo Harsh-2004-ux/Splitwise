@@ -9,7 +9,6 @@ const expenseSplitSchema = new mongoose.Schema({
   owedAmount: {
     type: Number,
     required: true,
-    min: 0,
   },
   shareUnits: {
     type: Number,
@@ -36,7 +35,24 @@ const expenseSchema = new mongoose.Schema({
   amount: {
     type: Number,
     required: [true, 'Expense amount is required'],
-    min: 0.01,
+  },
+  originalAmount: {
+    type: Number,
+    default: null,
+  },
+  originalCurrency: {
+    type: String,
+    default: 'INR',
+    uppercase: true,
+    trim: true,
+  },
+  exchangeRate: {
+    type: Number,
+    default: 1,
+  },
+  importSource: {
+    rowNumber: Number,
+    rawDescription: String,
   },
   splitType: {
     type: String,

@@ -1,120 +1,91 @@
 # SCOPE.md - Anomaly Log and Database Schema
 
-This file documents the scope, validation/anomaly handling, and database schema for the Splitwise Clone project.
+## Product Scope
 
-## Project Scope
+The app supports login, groups, members with join/leave dates, expenses, settlements, balances, debt simplification, and CSV import. The import workflow lives on the group page: upload `expenses_export.csv`, then review the generated Import report tab.
 
-The project is a full-stack Splitwise-style expense sharing application. It allows users to register, log in, create groups, add members, record expenses, split expenses in multiple ways, simplify debts, record settlements, and discuss expenses through real-time chat.
+Known gap: the original app uses MongoDB/Mongoose. The assignment asks for a relational DB only, so this still needs a future migration to PostgreSQL/SQLite before final submission.
 
-The application does not currently ingest CSV files. Instead, data is entered through the frontend forms and validated by backend APIs before being saved to MongoDB.
+## Import Anomaly Handling
 
-## Data Anomalies Handled
+| Anomaly | Policy |
+| --- | --- |
+| Exact duplicate expense | Skip duplicate and list it in the report. |
+| Near duplicate with conflicting amount/payer | Keep the row supported by notes; skip the suspected wrong row. |
+| Settlement entered as expense | Store in settlements instead of expenses. |
+| Missing payer | Reject row because balances cannot be traced. |
+| Missing currency | Default to INR and report. |
+| USD amount | Convert to INR with fixed documented rate `83`. |
+| Negative amount | Treat as refund and import as negative expense. |
+| Zero amount | Skip because it has no balance effect. |
+| More than two decimals | Round to two decimals and report. |
+| Name aliases/casing/spaces | Normalize to canonical user names. |
+| Guest participant | Create/import guest user and mark membership type as guest. |
+| Member outside active dates | Remove inactive participant from split and recalculate. |
+| Percentage total not 100 | Normalize percentages proportionally. |
+| Equal split with share details | Use declared split type and report conflicting details. |
+| Ambiguous/non-standard date | Parse with documented policy and report. |
 
-Because this project uses API/form input instead of CSV import, anomalies are handled during user input and API request validation.
+## MongoDB Schema
 
-| Data Problem / Anomaly | Where It Can Happen | Action Taken |
-| --- | --- | --- |
-| Missing user name, email, or password | User registration | Request is rejected by validation. |
-| Duplicate email address | User registration | MongoDB unique email constraint prevents duplicate users. |
-| Email with inconsistent casing/spaces | User registration/login | Email is lowercased and trimmed before storage. |
-| Invalid or missing JWT token | Protected routes | Request is rejected and user must log in again. |
-| Empty group name | Group creation | Request is rejected by schema validation. |
-| Adding a non-existing user to a group | Group member invite | Backend checks email/user existence before adding. |
-| Invalid expense title | Expense creation/update | Required title validation prevents blank expense records. |
-| Expense amount is zero or negative | Expense creation/update | Rejected because amount must be greater than 0. |
-| No split participants | Expense creation/update | Rejected because at least one user must be included. |
-| Invalid split type | Expense creation/update | Rejected unless split type is one of `EQUAL`, `UNEQUAL`, `PERCENTAGE`, or `SHARE`. |
-| Equal split causes rounding remainder | Equal split engine | Amount is converted to cents and remaining cents are distributed safely. |
-| Unequal split total does not match expense amount | Unequal split engine | Request is rejected with an error. |
-| Percentage split does not total 100% | Percentage split engine | Request is rejected unless total percentage is within allowed tolerance. |
-| Percentage/share split causes penny remainder | Percentage/share split engine | Remaining cents are assigned to the final participant to preserve the total. |
-| Share split has zero or invalid total shares | Share split engine | Request is rejected because total shares must be greater than zero. |
-| Floating-point money precision issues | Split and debt calculations | Money is rounded to cents during calculations. |
-| Unauthorized group/expense access | Private APIs | Protected routes require authentication and group/member checks. |
-| Empty chat message | Expense comments | Required message validation prevents empty comments. |
+### User
 
-## Database Schema
+| Field | Type |
+| --- | --- |
+| `name` | String |
+| `email` | String, unique |
+| `passwordHash` | String |
+| `createdAt` | Date |
 
-Database: MongoDB  
-ODM: Mongoose
+### Group
 
-### Users Collection
+| Field | Type |
+| --- | --- |
+| `name` | String |
+| `description` | String |
+| `createdBy` | ObjectId -> User |
+| `members[]` | Embedded member records |
 
-Model file: `backend/src/models/User.js`
+Member fields: `user`, `role`, `joinedAt`, `leftAt`, `membershipType`.
 
-| Field | Type | Rule |
-| --- | --- | --- |
-| `name` | String | Required, trimmed |
-| `email` | String | Required, unique, lowercase, trimmed |
-| `passwordHash` | String | Required |
-| `createdAt` | Date | Defaults to current date |
+### Expense
 
-### Groups Collection
+| Field | Type |
+| --- | --- |
+| `groupId` | ObjectId -> Group |
+| `paidBy` | ObjectId -> User |
+| `title` | String |
+| `amount` | Number in INR |
+| `originalAmount` | Number |
+| `originalCurrency` | String |
+| `exchangeRate` | Number |
+| `splitType` | `EQUAL`, `UNEQUAL`, `PERCENTAGE`, `SHARE` |
+| `splits[]` | Embedded split records |
+| `importSource` | `{ rowNumber, rawDescription }` |
+| `createdAt` | Expense date |
 
-Model file: `backend/src/models/Group.js`
+Split fields: `user`, `owedAmount`, `shareUnits`.
 
-| Field | Type | Rule |
-| --- | --- | --- |
-| `name` | String | Required, trimmed |
-| `description` | String | Trimmed |
-| `createdBy` | ObjectId -> User | Required |
-| `members` | Array | Embedded group member records |
-| `createdAt` | Date | Defaults to current date |
+### Settlement
 
-Group member subdocument:
+| Field | Type |
+| --- | --- |
+| `groupId` | ObjectId -> Group |
+| `payerId` | ObjectId -> User |
+| `payeeId` | ObjectId -> User |
+| `amount` | Number in INR |
+| `note` | String |
+| `settledAt` | Date |
+| `importSource` | `{ rowNumber, rawDescription }` |
 
-| Field | Type | Rule |
-| --- | --- | --- |
-| `user` | ObjectId -> User | Required |
-| `role` | String | `admin` or `member`, default `member` |
-| `joinedAt` | Date | Defaults to current date |
+### ImportRun
 
-### Expenses Collection
-
-Model file: `backend/src/models/Expense.js`
-
-| Field | Type | Rule |
-| --- | --- | --- |
-| `groupId` | ObjectId -> Group | Required |
-| `paidBy` | ObjectId -> User | Required |
-| `title` | String | Required, trimmed |
-| `amount` | Number | Required, minimum `0.01` |
-| `splitType` | String | `EQUAL`, `UNEQUAL`, `PERCENTAGE`, or `SHARE` |
-| `splits` | Array | Embedded expense split records |
-| `createdAt` | Date | Defaults to current date |
-
-Expense split subdocument:
-
-| Field | Type | Rule |
-| --- | --- | --- |
-| `user` | ObjectId -> User | Required |
-| `owedAmount` | Number | Required, minimum `0` |
-| `shareUnits` | Number | Optional; used for share split |
-
-### Settlements Collection
-
-Model file: `backend/src/models/Settlement.js`
-
-| Field | Type | Rule |
-| --- | --- | --- |
-| `groupId` | ObjectId -> Group | Required |
-| `payerId` | ObjectId -> User | Required |
-| `payeeId` | ObjectId -> User | Required |
-| `amount` | Number | Required, minimum `0.01` |
-| `note` | String | Trimmed |
-| `settledAt` | Date | Defaults to current date |
-
-### Comments Collection
-
-Model file: `backend/src/models/Comment.js`
-
-| Field | Type | Rule |
-| --- | --- | --- |
-| `expenseId` | ObjectId -> Expense | Required |
-| `userId` | ObjectId -> User | Required |
-| `message` | String | Required, trimmed |
-| `createdAt` | Date | Defaults to current date |
-
-## Notes
-
-The assignment mentioned CSV anomalies, but this implementation does not include a CSV import pipeline. The project handles equivalent data quality issues through backend validation, schema constraints, and split-calculation checks.
+| Field | Type |
+| --- | --- |
+| `groupId` | ObjectId -> Group |
+| `importedBy` | ObjectId -> User |
+| `fileName` | String |
+| `summary` | Counts for rows/anomalies/actions |
+| `policies[]` | Strings shown to reviewer |
+| `rows[]` | Row status, action, and anomalies |
+| `createdAt` | Date |

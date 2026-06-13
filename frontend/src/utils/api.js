@@ -103,6 +103,15 @@ export const api = {
     list: (groupId) => apiFetch(`/groups/${groupId}/settlements`),
   },
 
+  imports: {
+    latest: (groupId) => apiFetch(`/groups/${groupId}/imports/latest`),
+    create: (groupId, { csvText, fileName }) =>
+      apiFetch(`/groups/${groupId}/imports`, {
+        method: 'POST',
+        body: JSON.stringify({ csvText, fileName }),
+      }),
+  },
+
   comments: {
     list: (expenseId) => apiFetch(`/expenses/${expenseId}/comments`),
     create: (expenseId, message) => 

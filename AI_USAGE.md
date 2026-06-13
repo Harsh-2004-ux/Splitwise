@@ -54,6 +54,13 @@ Create documentation for setup, API endpoints, build plan, architecture,
 and AI usage for the project.
 ```
 
+### Prompt 6: Assignment CSV Import Update
+
+```text
+Proceed with the assignment update. Keep previous app features, add the
+missing CSV import/report behavior, and read the provided Expenses Export.csv.
+```
+
 ## Incorrect AI Outputs and Corrections
 
 ### Case 1: Wrong Initial Database Direction
@@ -107,21 +114,37 @@ Socket.io rooms were used:
 1. Group rooms for expense and balance updates.
 2. Expense rooms for expense-specific chat comments.
 
-### Case 4: CSV Import Assumption
+### Case 4: Wrong CSV Row Reference
 
-AI initially treated the assignment questions as if this project had a CSV import pipeline.
+AI initially described the duplicate Marina Bites row as row 5.
 
 Why it was wrong:
 
-The repository is a Splitwise clone with API/form-based data entry. It does not include CSV ingestion.
+Row 5 is the first valid Marina Bites entry. Row 6 is the duplicate.
 
 How it was caught:
 
-The project files were reviewed and no CSV parser, import route, import script, or generated CSV report existed.
+The CSV was enumerated line-by-line before finalizing the importer.
 
 Correction made:
 
-The documentation now clearly states that CSV import is not applicable and explains the equivalent validation handled through the backend APIs and Mongoose schemas.
+The importer now skips row 6 and reports that row 5 was kept.
+
+### Case 5: Membership Window Risk
+
+AI initially leaned toward treating imported users as normal current group members.
+
+Why it was wrong:
+
+Sam joined mid-April and Meera left after March, so balances must respect membership dates.
+
+How it was caught:
+
+The assignment's Sam and Meera requirements were compared against the split participants in the April and March rows.
+
+Correction made:
+
+The importer stores `joinedAt`, `leftAt`, and `membershipType`, removes inactive participants from imported splits, and reports the adjustment.
 
 ## Human Review and Final Changes
 
@@ -133,6 +156,7 @@ AI-generated suggestions were reviewed against the actual repository before bein
 4. Greedy debt simplification for settlement suggestions.
 5. Socket.io rooms for scoped real-time updates.
 6. React Query and Zustand for frontend data/state management.
+7. A CSV import route, stored import report, and group-page Import report tab.
 
 ## Disclosure
 

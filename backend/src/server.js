@@ -10,6 +10,7 @@ import usersRoutes from './routes/users.js';
 import groupRoutes from './routes/groups.js';
 import expenseRoutes from './routes/expenses.js';
 import commentRoutes from './routes/comments.js';
+import importRoutes from './routes/imports.js';
 
 // Load Environment variables
 dotenv.config();
@@ -47,6 +48,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api', expenseRoutes);
 app.use('/api', commentRoutes);
+app.use('/api', importRoutes);
 
 app.get('/', (req, res) => {
   res.send('Splitwise Clone API is running');

@@ -1,62 +1,51 @@
-# IMPORT_REPORT.md - Import Report
+# Import Report
 
-This file documents import behavior and anomaly handling for the Splitwise Clone project.
+This is the human-readable version of the report produced by the app after uploading `expenses_export.csv` from a group page. The API also stores the same row-level report in the `ImportRun` collection and exposes it in the Import report tab.
 
-## Import Summary
+## Summary
 
-CSV import is not implemented in this project. The application does not currently ingest data from a CSV file.
+| Metric | Value |
+| --- | ---: |
+| CSV data rows | 42 |
+| Accepted or adjusted expenses | 37 |
+| Recorded settlements | 2 |
+| Skipped duplicate/zero rows | 3 |
+| Rejected rows | 1 |
 
-Data is created through:
+## Policies Applied
 
-1. User registration and login forms
-2. Group creation forms
-3. Member invitation by email
-4. Expense creation and update forms
-5. Settlement forms
-6. Expense comment/chat forms
+- USD rows are converted to INR at `1 USD = INR 83`; original amount/currency are preserved.
+- Repayments and deposit transfers are settlements, not expenses.
+- `Priya S`, lowercase `priya`, and spaced `rohan ` are normalized to known members.
+- Meera is active through `2026-03-31`; Sam starts on `2026-04-10`; Dev and Kabir are guests for trip rows.
+- Inactive members listed in a split are removed and the split is recalculated.
+- Negative amounts are refunds and reverse the original debt.
+- Percent totals that are not 100 are normalized proportionally and reported.
+- Missing payer is rejected because the payer credit cannot be traced.
+- Duplicate rows are skipped in import and listed for review.
 
-Because there is no CSV ingestion pipeline, there is no generated runtime CSV import report. Instead, the application performs validation during API requests and returns errors immediately when invalid data is submitted.
+## Row-Level Anomalies
 
-## Equivalent Validation Report
-
-The table below lists the anomalies the application can detect during normal data entry and the action taken.
-
-| Input Area | Anomaly Detected | Action Taken |
-| --- | --- | --- |
-| Registration | Missing name, email, or password | Reject request and return validation error. |
-| Registration | Duplicate email | Reject duplicate user because email is unique. |
-| Registration/Login | Email case or extra spaces | Normalize email using lowercase and trim. |
-| Authentication | Missing/invalid JWT token | Reject protected API request. |
-| Group creation | Missing group name | Reject request through schema validation. |
-| Group members | Invited email does not exist | Do not add member; return an error. |
-| Expense creation | Missing expense title | Reject request through schema validation. |
-| Expense creation | Amount is zero or negative | Reject request because amount must be at least `0.01`. |
-| Expense creation | No participants selected | Reject request because at least one participant is required. |
-| Expense creation | Invalid split type | Reject request unless split type is supported. |
-| Equal split | Total cannot divide equally by participants | Distribute penny remainder safely after cent conversion. |
-| Unequal split | Split amounts do not equal total expense | Reject request and ask user to correct split amounts. |
-| Percentage split | Percentages do not add to 100% | Reject request and ask user to correct percentages. |
-| Percentage split | Rounding creates small cent difference | Assign remaining cents to the last participant. |
-| Share split | Total share units are zero or invalid | Reject request because shares must be greater than zero. |
-| Share split | Rounding creates small cent difference | Assign remaining cents to the last participant. |
-| Debt calculation | Floating-point precision drift | Round final net balances to two decimal places. |
-| Comments | Empty chat message | Reject request through required message validation. |
-
-## Sample Import-Style Result
-
-If the project had to report one API data-entry session in import-report format, the result would look like this:
-
-| Record | Status | Message |
-| --- | --- | --- |
-| User registration | Accepted | User created after normalizing email. |
-| Group creation | Accepted | Group saved with creator as admin member. |
-| Expense with equal split | Accepted | Split calculated in cents and saved. |
-| Expense with unequal split mismatch | Rejected | Split total did not match expense total. |
-| Expense with percentage total 95% | Rejected | Percentage split must total 100%. |
-| Settlement with amount 0 | Rejected | Settlement amount must be at least `0.01`. |
-
-## Final Note
-
-The Drive assignment mentions an import report produced after CSV ingestion. For this specific project, the correct interpretation is:
-
-`CSV import is not applicable. The application validates user-entered data through backend APIs and Mongoose schemas instead of importing CSV rows.`
+| Row | Problem | Action |
+| ---: | --- | --- |
+| 6 | Duplicate Marina Bites dinner | Skipped; row 5 kept. |
+| 7 | Amount contains comma formatting | Parsed as `1200`. |
+| 9 | Payer casing `priya` | Normalized to Priya. |
+| 10 | Amount has 3 decimals | Rounded `899.995` to `900.00`. |
+| 11 | Alias `Priya S` | Normalized to Priya. |
+| 13 | Missing payer | Rejected. |
+| 14 | Repayment logged as expense | Recorded as Rohan paying Aisha. |
+| 15 | Percent split totals 110 | Normalized to 100. |
+| 20 | USD villa booking | Converted `540 USD` to INR. |
+| 21 | USD lunch | Converted `84 USD` to INR. |
+| 23 | Extra guest Kabir | Created/imported Kabir as guest participant. |
+| 24/25 | Near duplicate Thalassa dinner | Skipped row 24; kept row 25 because notes say Aisha's entry is wrong. |
+| 26 | Negative USD amount | Imported as refund using INR conversion. |
+| 27 | Non-standard date `Mar-14` and spaced payer | Parsed as `2026-03-14`; normalized Rohan. |
+| 28 | Missing currency | Defaulted to INR. |
+| 31 | Zero amount | Skipped. |
+| 32 | Percent split totals 110 | Normalized to 100. |
+| 34 | Ambiguous `04-05-2026` | Parsed as DD-MM-YYYY, so `2026-05-04`. |
+| 36 | Meera listed after moving out | Removed Meera from split and recalculated. |
+| 38 | Sam deposit logged as expense | Recorded as Sam paying Aisha. |
+| 42 | Equal split with share details | Used declared `equal` split and reported conflicting details. |

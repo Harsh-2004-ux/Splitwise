@@ -14,7 +14,9 @@ import {
   MessageSquare,
   History,
   Info,
-  Check
+  Check,
+  Upload,
+  FileText
 } from 'lucide-react';
 
 import AddExpenseModal from '../components/AddExpenseModal';
@@ -26,10 +28,11 @@ export default function GroupDetail() {
   const { user: currentUser } = useAuthStore();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState('expenses'); // 'expenses' | 'balances' | 'settlements'
+  const [activeTab, setActiveTab] = useState('expenses'); // 'expenses' | 'balances' | 'settlements' | 'import'
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteError, setInviteError] = useState('');
   const [inviteSuccess, setInviteSuccess] = useState(false);
+  const [importError, setImportError] = useState('');
 
   // Modals visibility states
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
@@ -66,6 +69,11 @@ export default function GroupDetail() {
     queryFn: () => api.settlements.list(groupId),
   });
 
+  const { data: importReport, isLoading: importLoading } = useQuery({
+    queryKey: ['importReport', groupId],
+    queryFn: () => api.imports.latest(groupId),
+  });
+
   // 2. Mutations
   const inviteMutation = useMutation({
     mutationFn: (email) => api.groups.addMember(groupId, email),
@@ -88,6 +96,24 @@ export default function GroupDetail() {
       queryClient.invalidateQueries({ queryKey: ['balances', groupId] });
       queryClient.invalidateQueries({ queryKey: ['overallBalances'] });
     }
+  });
+
+  const importMutation = useMutation({
+    mutationFn: ({ csvText, fileName }) => api.imports.create(groupId, { csvText, fileName }),
+    onSuccess: () => {
+      setImportError('');
+      setActiveTab('import');
+      queryClient.invalidateQueries({ queryKey: ['group', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['expenses', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['balances', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['settlements', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['importReport', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['overallBalances'] });
+    },
+    onError: (err) => {
+      setImportError(err.message || 'Import failed');
+      setActiveTab('import');
+    },
   });
 
   const handleInviteSubmit = (e) => {
@@ -135,7 +161,22 @@ export default function GroupDetail() {
     setIsDetailModalOpen(true);
   };
 
-  const isLoading = groupLoading || expensesLoading || balancesLoading || settlementsLoading;
+  const handleCsvUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setImportError('');
+    try {
+      const csvText = await file.text();
+      importMutation.mutate({ csvText, fileName: file.name });
+    } catch (err) {
+      setImportError(err.message || 'Could not read CSV file');
+      setActiveTab('import');
+    } finally {
+      event.target.value = '';
+    }
+  };
+
+  const isLoading = groupLoading || expensesLoading || balancesLoading || settlementsLoading || importLoading;
 
   if (isLoading) {
     return (
@@ -182,6 +223,18 @@ export default function GroupDetail() {
           </div>
 
           <div className="flex gap-2">
+            <label className="btn-secondary flex items-center gap-2 text-sm py-2 cursor-pointer">
+              <Upload size={16} />
+              <span>{importMutation.isPending ? 'Importing...' : 'Import CSV'}</span>
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                onChange={handleCsvUpload}
+                disabled={importMutation.isPending}
+                className="hidden"
+              />
+            </label>
+
             <button 
               onClick={handleOpenSettleGeneral}
               className="btn-secondary flex items-center gap-2 text-sm py-2"
@@ -208,7 +261,7 @@ export default function GroupDetail() {
         <div className="lg:col-span-2 space-y-6">
           {/* Tabs */}
           <div className="flex border-b border-slate-800">
-            {['expenses', 'balances', 'settlements'].map((tab) => (
+            {['expenses', 'balances', 'settlements', 'import'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -218,7 +271,7 @@ export default function GroupDetail() {
                     : 'border-transparent text-slate-500 hover:text-slate-300'
                 }`}
               >
-                {tab === 'settlements' ? 'settlements log' : tab}
+                {tab === 'settlements' ? 'settlements log' : tab === 'import' ? 'import report' : tab}
               </button>
             ))}
           </div>
@@ -413,6 +466,92 @@ export default function GroupDetail() {
                 <div className="glass-card p-10 text-center text-slate-500 italic text-sm">
                   No settlements recorded yet.
                 </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'import' && (
+            <div className="space-y-4">
+              {importError && (
+                <div className="glass-card p-4 border-red-500/30 bg-red-500/10 text-sm text-red-200">
+                  {importError}
+                </div>
+              )}
+
+              {!importReport ? (
+                <div className="glass-card p-10 text-center text-slate-500 italic text-sm">
+                  Upload expenses_export.csv to generate the row-by-row import report.
+                </div>
+              ) : (
+                <>
+                  <div className="glass-card p-5 space-y-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                          <FileText size={16} className="text-green-500" />
+                          <span>{importReport.fileName}</span>
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Imported {new Date(importReport.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="text-right text-xs text-slate-400">
+                        <div>{importReport.summary?.acceptedExpenses || 0} expenses</div>
+                        <div>{importReport.summary?.settlements || 0} settlements</div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-xs">
+                      {[
+                        ['Rows', importReport.summary?.totalRows || 0],
+                        ['Anomalies', importReport.summary?.anomalyCount || 0],
+                        ['Skipped', importReport.summary?.skippedRows || 0],
+                        ['Rejected', importReport.summary?.rejectedRows || 0],
+                        ['Accepted', importReport.summary?.acceptedExpenses || 0],
+                      ].map(([label, value]) => (
+                        <div key={label} className="rounded-xl bg-slate-950/30 border border-slate-800/60 p-3">
+                          <div className="text-slate-500">{label}</div>
+                          <div className="text-white font-extrabold mt-1">{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {importReport.rows?.map((row) => (
+                      <div key={row.rowNumber} className="glass-card p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="text-xs text-slate-500">Row {row.rowNumber}</div>
+                            <h4 className="font-bold text-sm text-white">{row.description}</h4>
+                            <p className="text-xs text-slate-400 mt-1">{row.action}</p>
+                          </div>
+                          <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-md ${
+                            row.status === 'accepted' ? 'bg-green-600/15 text-green-400' :
+                            row.status === 'adjusted' ? 'bg-amber-500/15 text-amber-300' :
+                            row.status === 'settlement' ? 'bg-sky-500/15 text-sky-300' :
+                            row.status === 'rejected' ? 'bg-red-500/15 text-red-300' :
+                            'bg-slate-700/60 text-slate-300'
+                          }`}>
+                            {row.status}
+                          </span>
+                        </div>
+
+                        {row.anomalies?.length > 0 && (
+                          <div className="space-y-2">
+                            {row.anomalies.map((item, idx) => (
+                              <div key={`${row.rowNumber}-${item.code}-${idx}`} className="rounded-lg border border-slate-800/70 bg-slate-950/30 p-3 text-xs">
+                                <div className="font-bold text-slate-200">{item.code}</div>
+                                <div className="text-slate-400 mt-1">{item.message}</div>
+                                <div className="text-green-300 mt-1">{item.action}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           )}
